@@ -16,16 +16,20 @@ import java.util.stream.Collectors;
 public class UtilClass {
     private static ArrayList<Address> addresses = new ArrayList<>();
 
-    public static ArrayList<Address> parsingXML(String filePath) throws ParserConfigurationException, SAXException, IOException {
-        addresses.clear();
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        SAXParser parser = factory.newSAXParser();
-        XMLHandler handler = new XMLHandler();
-        File file = new File(filePath);
-        Reader reader = new InputStreamReader(new FileInputStream(file));
-        InputSource source = new InputSource();
-        source.setCharacterStream(reader);
-        parser.parse(source, handler);
+    public static ArrayList<Address> parsingXML(String filePath) {
+        try {
+            addresses.clear();
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser parser = factory.newSAXParser();
+            XMLHandler handler = new XMLHandler();
+            File file = new File(filePath);
+            Reader reader = new InputStreamReader(new FileInputStream(file));
+            InputSource source = new InputSource();
+            source.setCharacterStream(reader);
+            parser.parse(source, handler);
+        } catch (Exception e) {
+            System.out.println("Ошибка данных");
+        }
         return addresses;
     }
 
@@ -36,7 +40,7 @@ public class UtilClass {
             File file = new File(filePath);
             FileReader fileReader = new FileReader(file);
             BufferedReader reader = new BufferedReader(fileReader);
-            String line = reader.readLine();
+            String line = reader.readLine(); //пропускаем заголовок
             line = reader.readLine();
             while (line != null) {
                 String[] columns = line.split(DELIMITER);
@@ -49,7 +53,9 @@ public class UtilClass {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        catch (NumberFormatException e) {
+            System.out.println("Ошибка формата файла");
+        }
         return addresses;
     }
 
@@ -67,7 +73,6 @@ public class UtilClass {
         Set<Address> singlAddresses = new HashSet<>();
         singlAddresses.addAll(addresses);
         Map<String, List<Address>> citys = singlAddresses.stream()
-                //.sorted((a, b) ->{ return a.getCity().compareTo(b.getCity());})
                 .collect(Collectors.groupingBy(Address::getCity));
         Map<String, List<Address>> sortedCitys = new TreeMap<>(citys);
 
@@ -78,14 +83,13 @@ public class UtilClass {
                     .collect(Collectors.groupingBy(Address::getFloor))
                     .entrySet()
                     .stream()
-                    .collect(Collectors.toMap(e -> e.getValue().size(), e -> e.getKey()));
+                    .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().size()));
+            Map<Integer, Integer> sortedCountHouse = new TreeMap<>(countHouse);
 
-            for (Map.Entry<Integer, Integer> entry1 : countHouse.entrySet()) {
-                System.out.println(entry1.getValue() + " этажей - " + entry1.getKey());
+            for (Map.Entry<Integer, Integer> entry1 : sortedCountHouse.entrySet()) {
+                System.out.println(entry1.getKey() + " этажей - " + entry1.getValue());
             }
         }
-
-
     }
 
     public static void printDuplicates(Map<Integer, Address> duplicates) {
@@ -98,7 +102,6 @@ public class UtilClass {
             int floor = address.getFloor();
             int count = entry.getKey();
             System.out.println("Адрес: " + city + ", " + street + ", " + house + ", " + floor + "; колличество повторений " + count);
-
         }
     }
 
@@ -133,7 +136,8 @@ public class UtilClass {
 
     private static class XMLHandler extends DefaultHandler {
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        public void startElement(String uri, String localName, String qName, Attributes attributes) {
+
             if (qName.equals("item")) {
                 String city = attributes.getValue("city");
                 String street = attributes.getValue("street");
@@ -143,5 +147,4 @@ public class UtilClass {
             }
         }
     }
-
 }

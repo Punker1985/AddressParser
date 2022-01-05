@@ -12,7 +12,7 @@ import static AddressParser.UtilClass.*;
 
 public class AddressParserApplication {
 
-    public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException {
+    public static void main(String[] args) {
         String inputFilePath = "";
         ArrayList<Address> addresses = null;
         while (!inputFilePath.equals("exit")) {
