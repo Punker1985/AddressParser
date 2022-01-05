@@ -19,9 +19,9 @@ public class AddressParserApplication {
             inputFilePath = readFilePath();
             if (checkFilePath(inputFilePath)) {
                 if (checkFileXML(inputFilePath)) {
-                    addresses = new ArrayList<>(parsingXML(inputFilePath)); //     c:\\address.xml
-                } else {                                                     //    c:\\address.txt
-                    if (checkFileCSV(inputFilePath)) {                       //    c:\\address.csv.xls
+                    addresses = new ArrayList<>(parsingXML(inputFilePath)); //     c:\\test\\address.xml
+                } else {                                                     //    c:\\test\\address.txt
+                    if (checkFileCSV(inputFilePath)) {                       //    c:\\test\\address.csv.xls
                         addresses = new ArrayList<>(parsingCSV(inputFilePath));
                     }
                 }

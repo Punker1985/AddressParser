@@ -67,9 +67,11 @@ public class UtilClass {
         Set<Address> singlAddresses = new HashSet<>();
         singlAddresses.addAll(addresses);
         Map<String, List<Address>> citys = singlAddresses.stream()
+                //.sorted((a, b) ->{ return a.getCity().compareTo(b.getCity());})
                 .collect(Collectors.groupingBy(Address::getCity));
+        Map<String, List<Address>> sortedCitys = new TreeMap<>(citys);
 
-        for (Map.Entry<String, List<Address>> entry : citys.entrySet()) {
+        for (Map.Entry<String, List<Address>> entry : sortedCitys.entrySet()) {
             System.out.println(entry.getKey());
             List<Address> house = entry.getValue();
             Map<Integer, Integer> countHouse = house.stream()
